@@ -1,2 +1,2 @@
 # Scripts
-Scripts I made (Roblox)
+Sharing scripts i made on Roblox
