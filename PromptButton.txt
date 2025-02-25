@@ -54,7 +54,6 @@ ProximityPromptService.PromptShown:Connect(function(prompt)
 
     Mobile.MouseButton1Down:Connect(function()
         prompt:InputHoldBegin()
-        fireproximityprompt(prompt)
     end)
 
     Mobile.MouseLeave:Connect(function()
