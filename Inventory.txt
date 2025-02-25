@@ -188,28 +188,32 @@ local function modifyinventory()
         textBox.PlaceholderText = "Search..."
     end
 
-    local scrollingFrame = inventory:FindFirstChild("ScrollingFrame")
-    if scrollingFrame then
-        scrollingFrame.Size = UDim2.new(1, 9, 1, -40)
-        scrollingFrame.Position = UDim2.new(0, 0, 0, 40)
-        local gridFrame = scrollingFrame:FindFirstChild("UIGridFrame")
-        if gridFrame then
-            gridFrame.Position = UDim2.new(0, 5, 0, 0)
-            gridFrame.Size = UDim2.new(1, -10, 1, 0)
-            for _, child in ipairs(gridFrame:GetChildren()) do
-                processGui(child)
-            end
-            gridFrame.ChildAdded:Connect(function(child)
-                processGui(child)
-                if child:IsA("TextButton") then
-                    child.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
-                    child.BackgroundTransparency = 0.3
-                end
-            end)
-            gridFrame.ChildRemoved:Connect(function(child)
-            end)
+local scrollingFrame = inventory:FindFirstChild("ScrollingFrame")
+if scrollingFrame then
+    scrollingFrame.Size = UDim2.new(1, 9, 1, -6)
+    scrollingFrame.Position = UDim2.new(0, 0, 0, 4)
+    
+    local gridFrame = scrollingFrame:FindFirstChild("UIGridFrame")
+    if gridFrame then
+        gridFrame.Position = UDim2.new(0, 5, 0, 35)
+        gridFrame.Size = UDim2.new(1, -10, 0.779999971, 0)
+        
+        for _, child in ipairs(gridFrame:GetChildren()) do
+            processGui(child)
         end
-    end
+        
+        gridFrame.ChildAdded:Connect(function(child)
+            processGui(child)
+            if child:IsA("TextButton") then
+                child.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+                child.BackgroundTransparency = 0.3
+            end
+        end)
+        
+        gridFrame.ChildRemoved:Connect(function(child)
+                  end)
+            end
+      end
 end
 
 modifyinventory()
