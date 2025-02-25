@@ -33,7 +33,7 @@ ProximityPromptService.PromptShown:Connect(function(prompt)
     Mobile.Name = "Mobile"
 
     local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0.5, 0) 
+    UICorner.CornerRadius = UDim.new(10, 10) 
     UICorner.Parent = Mobile
 
     local UIStroke = Instance.new("UIStroke")
