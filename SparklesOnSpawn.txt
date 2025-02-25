@@ -58,7 +58,7 @@ local function createEffect(character)
     pe1.Lifetime = NumberRange.new(1, 1)
     pe1.RotSpeed = NumberRange.new(-350, -350)
     pe1.Speed = NumberRange.new(25, 25)
-    pe1.SpreadAngle = Vector2.new(60, 0)
+    pe1.SpreadAngle = Vector2.new(80, 80)
     pe1.Shape = Enum.ParticleEmitterShape.Box
     pe1.ShapeInOut = Enum.ParticleEmitterShapeInOut.Outward
     pe1.ShapePartial = 1
