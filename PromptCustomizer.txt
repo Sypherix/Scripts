@@ -1,0 +1,42 @@
+local function formatText(text)
+    return (text and text ~= "" and not text:match("^• ")) and "• " .. text or text
+end
+
+local function adjustPromptSettings(prompt)
+    if prompt:IsA("ProximityPrompt") then
+        -- Change the prompt style to custom
+        prompt.Style = Enum.ProximityPromptStyle.Custom
+
+        -- Format text
+        if prompt.ObjectText ~= "" then
+            prompt.ObjectText = formatText(prompt.ObjectText)
+        end
+        if prompt.ActionText ~= "" then
+            prompt.ActionText = formatText(prompt.ActionText)
+        end
+
+        -- Set up property change signals for future changes
+        prompt:GetPropertyChangedSignal("ActionText"):Connect(function()
+            if prompt.ActionText ~= "" then
+                prompt.ActionText = formatText(prompt.ActionText)
+            end
+        end)
+        prompt:GetPropertyChangedSignal("ObjectText"):Connect(function()
+            if prompt.ObjectText ~= "" then
+                prompt.ObjectText = formatText(prompt.ObjectText)
+            end
+        end)
+    end
+end
+
+-- Apply adjustments to all existing prompts in the game
+for _, prompt in pairs(game:GetDescendants()) do
+    adjustPromptSettings(prompt)
+end
+
+-- Apply adjustments to newly added prompts
+game.DescendantAdded:Connect(function(descendant)
+    if descendant:IsA("ProximityPrompt") then
+        adjustPromptSettings(descendant)
+    end
+end)

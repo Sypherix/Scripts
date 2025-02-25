@@ -1,0 +1,16 @@
+local RunService = game:GetService("RunService")
+local VirtualUser = game:GetService("VirtualUser")
+
+local function AntiAFK()
+    local player = game.Players.LocalPlayer
+
+    player.Idled:Connect(function()
+        VirtualUser:CaptureController()
+        VirtualUser:ClickButton2(Vector2.new())
+    end)
+
+    RunService.Heartbeat:Connect(function() end)
+end
+
+
+AntiAFK()

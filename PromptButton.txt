@@ -1,0 +1,126 @@
+--[[
+    WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
+local UserInputService = game:GetService("UserInputService")
+
+local promptButtons = {}
+
+local screenGui -- Define screenGui outside the event handler for scope
+
+-- Function to determine if the player is on mobile
+local function isMobile()
+    return UserInputService.TouchEnabled
+end
+
+
+-- Connect to ProximityPromptService's PromptShown event
+ProximityPromptService.PromptShown:Connect(function(prompt)
+    -- If it's a PC or Console, do not show the prompt UI
+    if not isMobile() then
+        return
+    end
+
+    -- Check if screenGui exists and destroy it if necessary
+    if screenGui then
+        screenGui:Destroy()
+    end
+
+    -- Create ScreenGui
+    screenGui = Instance.new("ScreenGui")
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = Players.LocalPlayer.PlayerGui
+
+    -- Add UIScale to scale the ImageButton properly
+    local UIScale = Instance.new("UIScale")
+    UIScale.Parent = screenGui
+    UIScale.Scale = 1
+
+    -- Create ImageButton for prompt interaction
+    local Mobile = Instance.new("ImageButton")
+    Mobile.Parent = screenGui
+    Mobile.AnchorPoint = Vector2.new(1, 1)
+    Mobile.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Mobile.Image = "rbxassetid://0" -- Placeholder image ID
+    Mobile.ImageTransparency = 1
+    Mobile.Size = UDim2.new(0.124, 0, 0.30, 0) -- Set width and height equal for a square base
+    Mobile.Position = UDim2.new(0.75, 0, 0.5, 0) -- Adjust position as needed
+    Mobile.BackgroundTransparency = 0.7
+    Mobile.Name = "Mobile"
+
+    -- Add UICorner for rounded corners
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0.5, 0) -- Perfectly round corners for a circle
+    UICorner.Parent = Mobile
+    UICorner.Name = "UICorner"
+
+    -- Add UIStroke for border effect
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.Color = Color3.fromRGB(241, 241, 241)
+    UIStroke.Thickness = 4.5
+    UIStroke.Transparency = 0.58
+    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+    UIStroke.Parent = Mobile
+    UIStroke.Name = "UIStroke"
+
+    -- Add ImageLabel inside the ImageButton
+    local Touch = Instance.new("ImageLabel")
+    Touch.Parent = Mobile
+    Touch.AnchorPoint = Vector2.new(1, 1)
+    Touch.Size = UDim2.new(0.7, 0, 0.7, 0)
+    Touch.Position = UDim2.new(0.85, 0, 0.85, 0)
+    Touch.BackgroundTransparency = 1
+    Touch.ImageTransparency = 0.3
+    Touch.Image = "rbxassetid://15667708449"
+    Touch.Name = "Touch"
+    Touch.ScaleType = Enum.ScaleType.Fit
+
+    -- On Mobile: Connect MouseButton1Down to start holding the prompt and trigger it
+    Mobile.MouseButton1Down:Connect(function()
+        prompt:InputHoldBegin()
+        fireproximityprompt(prompt)
+    end)
+
+    -- On Mobile: Use MouseLeave to stop holding the prompt
+    Mobile.MouseLeave:Connect(function()
+        prompt:InputHoldEnd()
+    end)
+
+    -- On PC, Gamepad, or Console, trigger the prompt if the player is holding a specific input (e.g., from KeyboardKeyCode or Gamepad)
+    if not isMobile() then
+        -- Get the KeyboardKeyCode from ProximityPrompt (e.g., "E" key)
+        local triggerKey = prompt.KeyboardKeyCode or Enum.KeyCode.E  -- Default to "E" if not set
+        local triggerGamepadButton = prompt.GamepadKeyCode or Enum.KeyCode.ButtonA -- Default to Gamepad "A" button if not set
+
+        local function onKeyPress(input)
+            if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == triggerKey then
+                prompt:InputHoldBegin()
+                fireproximityprompt(prompt)  -- Trigger the proximity prompt
+            elseif input.UserInputType == Enum.UserInputType.Gamepad1 and input.KeyCode == triggerGamepadButton then
+                prompt:InputHoldBegin()
+                fireproximityprompt(prompt)  -- Trigger the proximity prompt
+            end
+        end
+
+        local function onKeyRelease(input)
+            if input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == triggerKey then
+                prompt:InputHoldEnd()
+            elseif input.UserInputType == Enum.UserInputType.Gamepad1 and input.KeyCode == triggerGamepadButton then
+                prompt:InputHoldEnd()
+            end
+        end
+
+        -- Connect to key press and release events for both keyboard and gamepad
+        UserInputService.InputBegan:Connect(onKeyPress)
+        UserInputService.InputEnded:Connect(onKeyRelease)
+    end
+
+    -- Connect to PromptHidden event to clean up
+    prompt.PromptHidden:Connect(function()
+        Mobile:Destroy()
+        promptButtons[prompt] = nil
+    end)
+
+    promptButtons[prompt] = Mobile
+end)

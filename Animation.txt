@@ -1,0 +1,112 @@
+local player = game.Players.LocalPlayer
+
+-- Check if the PlaceId is restricted and if the character is R6 or R15
+if (game.PlaceId == 15101393044 or 
+    game.PlaceId == 17481176031 or 
+    game.PlaceId == 15642262165 or 
+    game.PlaceId == 15642275269 or
+    game.PlaceId == 106556292191950 or
+    game.PlaceId == 91871924599325 or
+    game.PlaceId == 101385542053286 or
+    game.PlaceId == 129371234022752 or
+    game.PlaceId == 18984416148 or
+    game.PlaceId == 16552821455) or
+   (player.Character and player.Character:FindFirstChildOfClass("Humanoid").RigType == Enum.HumanoidRigType.R6) then
+    return
+end
+
+-- Proceed with your script here if conditions are not met
+
+local function applyAnimation(animationName, animationId)
+    local character = player.Character
+    local animate = character:WaitForChild("Animate")
+    
+    for _, child in ipairs(animate:GetChildren()) do
+        if child.Name:lower() == animationName:lower() then  -- Exact match instead of using string.match
+            local animation = child:FindFirstChildOfClass("Animation")
+            if animation then
+                animation.AnimationId = animationId
+            end
+            return
+        end
+    end
+end
+
+local function applyIdleAnimation(idle, animationIndex, animationId)
+    local animationName = "Animation" .. animationIndex
+    local animation = idle:FindFirstChild(animationName)
+    if animation then
+        animation.AnimationId = animationId
+    end
+end
+
+local function stopAnimations()
+    local character = player.Character
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
+            track:Stop()
+        end
+    end
+end
+
+local function AntiGoofy()
+
+stopAnimations()
+task.wait(1)
+stopAnimations()
+
+    local character = player.Character
+    local animate = character:WaitForChild("Animate")
+    local idle = animate:FindFirstChild("idle")
+
+    -- Apply empty animations (resetting them)
+    applyAnimation("run", "http://www.roblox.com/asset/?id=0")
+    applyAnimation("jump", "http://www.roblox.com/asset/?id=0")
+    applyAnimation("fall", "http://www.roblox.com/asset/?id=0")
+    applyAnimation("climb", "http://www.roblox.com/asset/?id=0")
+    applyAnimation("swim", "http://www.roblox.com/asset/?id=0")
+    applyAnimation("swimidle", "http://www.roblox.com/asset/?id=0")
+    applyAnimation("walk", "http://www.roblox.com/asset/?id=0")
+    
+    if idle then
+        applyIdleAnimation(idle, 1, "http://www.roblox.com/asset/?id=0")
+        applyIdleAnimation(idle, 2, "http://www.roblox.com/asset/?id=0")
+    end
+end
+
+
+
+local function setAnimations()
+    local character = player.Character
+    local animate = character:WaitForChild("Animate", 5)
+    local idle = animate:FindFirstChild("idle")
+    
+    -- Apply new animations
+    applyAnimation("run", "http://www.roblox.com/asset/?id=18537384940")  -- Run animation ID
+    applyAnimation("jump", "http://www.roblox.com/asset/?id=18537380791")  -- Jump animation ID
+    applyAnimation("fall", "http://www.roblox.com/asset/?id=18537367238")  -- Fall animation ID
+    applyAnimation("climb", "http://www.roblox.com/asset/?id=131326830509784")
+    applyAnimation("swim", "http://www.roblox.com/asset/?id=99384245425157")
+    applyAnimation("swimidle", "http://www.roblox.com/asset/?id=113199415118199")
+    applyAnimation("walk", "http://www.roblox.com/asset/?id=18537392113")  -- Walk animation ID
+    
+    if idle then
+        applyIdleAnimation(idle, 1, "http://www.roblox.com/asset/?id=10921301576")
+        applyIdleAnimation(idle, 2, "http://www.roblox.com/asset/?id=10921302207")
+    end
+end
+
+local function onCharacterAdded(character)
+    task.spawn(function()
+        AntiGoofy()
+        task.wait(0.5)
+        setAnimations()
+    end)
+end
+
+player.CharacterAdded:Connect(onCharacterAdded)
+
+if player.Character then
+    onCharacterAdded(player.Character)
+end

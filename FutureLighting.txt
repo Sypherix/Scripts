@@ -1,0 +1,102 @@
+local function disableEffect(effect)
+	if effect:GetAttribute("BetterLighting") then return end
+	if effect:IsA("Atmosphere") then
+		effect.Density = 0
+		effect.Offset = 0
+		effect.Glare = 0
+		effect:GetPropertyChangedSignal("Density"):Connect(function()
+			if effect.Density ~= 0 then
+				effect.Density = 0
+			end
+		end)
+		effect:GetPropertyChangedSignal("Offset"):Connect(function()
+			if effect.Offset ~= 0 then
+				effect.Offset = 0
+			end
+		end)
+		effect:GetPropertyChangedSignal("Glare"):Connect(function()
+			if effect.Glare ~= 0 then
+				effect.Glare = 0
+			end
+		end)
+	elseif effect:IsA("BloomEffect") or effect:IsA("DepthOfFieldEffect") or effect:IsA("SunRaysEffect") or effect:IsA("ColorCorrectionEffect") or effect:IsA("ColorGradingEffect") then
+		effect.Enabled = false
+		effect:GetPropertyChangedSignal("Enabled"):Connect(function()
+			if effect.Enabled ~= false then
+				effect.Enabled = false
+			end
+		end)
+	end
+end
+
+local function ApplyBetterLighting()
+	local lighting = game:GetService("Lighting")
+	for _, obj in pairs(game:GetDescendants()) do
+		if obj:IsA("BloomEffect") or obj:IsA("ColorCorrectionEffect") or obj:IsA("SunRaysEffect") or obj:IsA("DepthOfFieldEffect") or obj:IsA("ColorGradingEffect") or obj:IsA("Atmosphere") then
+			disableEffect(obj)
+		end
+	end
+
+	local Bloom = Instance.new("BloomEffect")
+	Bloom.Intensity = 0.8
+	Bloom.Size = 15
+	Bloom.Threshold = 0.7
+	Bloom.Parent = lighting
+	Bloom:SetAttribute("BetterLighting", true)
+
+	local DepthOfField = Instance.new("DepthOfFieldEffect")
+	DepthOfField.FarIntensity = 7
+	DepthOfField.FocusDistance = 90
+	DepthOfField.InFocusRadius = 0
+	DepthOfField.NearIntensity = 0
+	DepthOfField.Enabled = true
+	DepthOfField.Parent = lighting
+	DepthOfField:SetAttribute("BetterLighting", true)
+
+
+	local ColorCorrection = Instance.new("ColorCorrectionEffect")
+	ColorCorrection.Brightness = 0.001
+	ColorCorrection.Contrast = 0
+	ColorCorrection.Saturation = 0.2
+	ColorCorrection.Parent = lighting
+	ColorCorrection:SetAttribute("BetterLighting", true)
+
+	local ColorGrading = Instance.new("ColorGradingEffect")
+	ColorGrading.TonemapperPreset = Enum.TonemapperPreset.Default
+	ColorGrading.Parent = lighting
+	ColorGrading:SetAttribute("BetterLighting", true)
+
+	lighting.GlobalShadows = true
+	lighting.Technology = Enum.Technology.Voxel
+
+lighting:GetPropertyChangedSignal("Technology"):Connect(function()
+	if lighting.Technology ~= Enum.Technology.Voxel then
+		lighting.Technology = Enum.Technology.Voxel
+	end
+end)
+end
+
+ApplyBetterLighting()
+
+game:GetService("Lighting").DescendantAdded:Connect(function(obj)
+	if (obj:IsA("BloomEffect") or obj:IsA("DepthOfFieldEffect") or obj:IsA("SunRaysEffect") or obj:IsA("ColorCorrectionEffect") or obj:IsA("ColorGradingEffect") or obj:IsA("Atmosphere"))
+	and not obj:GetAttribute("BetterLighting") then
+		disableEffect(obj)
+	end
+end)
+
+local function adjustLights()
+	for _, light in ipairs(game:GetDescendants()) do
+		if light:IsA("PointLight") or light:IsA("SpotLight") or light:IsA("SurfaceLight") then
+			light.Range = light.Range * 1.25
+		end
+	end
+end
+
+adjustLights()
+
+game.DescendantAdded:Connect(function(descendant)
+	if descendant:IsA("PointLight") or descendant:IsA("SpotLight") or descendant:IsA("SurfaceLight") then
+		descendant.Range = descendant.Range * 1.25
+	end
+end)

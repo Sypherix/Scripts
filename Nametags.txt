@@ -1,0 +1,354 @@
+-- Wait for the game to fully load
+if not game:IsLoaded() then
+game.Loaded:Wait()
+end
+
+-- Main script starts here
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PremiumBadge = " "
+local VerifiedBadge = " "
+local FriendsBadge = "rbxassetid://18207951972"
+
+local function NameTags(player)
+local function onCharacterAdded(character)
+task.spawn(function()
+local head, humanoidRootPart
+
+repeat
+    head = character:FindFirstChild("Head")
+    humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
+    task.wait()
+until head and humanoidRootPart
+
+        -- Create the NameTag  
+        local NameTag = Instance.new("BillboardGui")  
+        NameTag.Size = UDim2.new(3, 0, 3, 0)  
+        NameTag.Brightness = 1.33  
+        NameTag.StudsOffsetWorldSpace = Vector3.new(0, 1.05358, 0)  
+        NameTag.ExtentsOffsetWorldSpace = Vector3.new(0, 3.6, 0)  
+        NameTag.ResetOnSpawn = true  
+        NameTag.MaxDistance = 50  
+        NameTag.Adornee = head
+        NameTag.Name = "NameTag"  
+        NameTag.Parent = humanoidRootPart  
+        
+
+        local frame = Instance.new("Frame")  
+        frame.Size = UDim2.new(1, 0, 1, 0)  
+        frame.BackgroundTransparency = 1  
+        frame.AnchorPoint = Vector2.new(0.135, 0)
+        frame.AutomaticSize = Enum.AutomaticSize.X
+        frame.Parent = NameTag  
+        frame.Name = "Names"  
+
+        -- UserName Label  
+        local UserName = Instance.new("TextLabel")  
+        UserName.Text = "(@" .. player.Name .. ")"  
+        UserName.Font = Enum.Font.GothamBlack  
+        UserName.Size = UDim2.new(2, 0, 0.165, 0)  
+        UserName.Position = UDim2.new(-0.5, 0, 0.05, 0)  
+        UserName.TextSize = 20  
+        UserName.TextScaled = true  
+        UserName.TextWrapped = true  
+        UserName.BackgroundTransparency = 1  
+        UserName.TextColor3 = Color3.fromRGB(100, 100, 100)  
+        UserName.TextStrokeTransparency = 0.5  
+        UserName.Parent = frame  
+        UserName.Name = "UserName"  
+
+        -- Gradient for Username  
+        local UserNameGradient = Instance.new("UIGradient")  
+        UserNameGradient.Rotation = 90  
+        UserNameGradient.Color = ColorSequence.new({  
+            ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 255, 255)),  
+            ColorSequenceKeypoint.new(1, Color3.fromRGB(150, 150, 150))  
+        })  
+        UserNameGradient.Parent = UserName  
+
+        -- DisplayName Label  
+        local DisplayName = Instance.new("TextLabel")  
+        DisplayName.Size = UDim2.new(2, 0, 0.27, 0)  
+        DisplayName.BackgroundTransparency = 1  
+        DisplayName.Text = player.DisplayName  
+        DisplayName.TextSize = 20  
+        DisplayName.TextColor3 = Color3.fromRGB(255, 255, 255)  
+        DisplayName.TextStrokeTransparency = 0.5  
+        DisplayName.Font = Enum.Font.GothamBlack  
+        DisplayName.TextScaled = true  
+        DisplayName.TextWrapped = true  
+        DisplayName.TextTruncate = Enum.TextTruncate.None  
+        DisplayName.Position = UDim2.new(-0.50, 0, 0.24, 0)  
+        DisplayName.Parent = frame  
+        DisplayName.Name = "DisplayName"  
+
+        -- UIStroke for DisplayName  
+        local TextStroke = Instance.new("UIStroke")  
+        TextStroke.LineJoinMode = Enum.LineJoinMode.Round  
+        TextStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual  
+        TextStroke.Transparency = 0.8  
+        TextStroke.Thickness = 3  
+        TextStroke.Parent = DisplayName  
+
+        -- Premium & Verified Badges  
+        if player.MembershipType == Enum.MembershipType.Premium then  
+            DisplayName.Text = PremiumBadge .. player.DisplayName  
+        end  
+
+        if player.HasVerifiedBadge then  
+            DisplayName.Text = player.DisplayName .. VerifiedBadge  
+        end  
+
+        if player.MembershipType == Enum.MembershipType.Premium and player.HasVerifiedBadge then  
+            DisplayName.Text = PremiumBadge .. player.DisplayName .. VerifiedBadge  
+        end  
+
+        -- Friends Badge  
+        if Player:IsFriendsWith(player.UserId) then  
+            local FriendsImage = Instance.new("ImageLabel")  
+            FriendsImage.Size = UDim2.new(0.25, 0, 0.25, 0)  
+            FriendsImage.Position = UDim2.new(0.385, 0, -0.20, 0)  
+            FriendsImage.Image = FriendsBadge  
+            FriendsImage.BackgroundTransparency = 1  
+            FriendsImage.Parent = frame  
+            FriendsImage.Name = "FriendsBadge"  
+        end  
+
+        -- Line under NameTag  
+        local Line = Instance.new("Frame")  
+        Line.Size = UDim2.new(2.11, 0, 0.036, 0)  
+        Line.Position = UDim2.new(-0.55, 0, 0.518, 0)  
+        Line.BackgroundColor3 = Color3.fromRGB(255, 255, 255)  
+        Line.Parent = NameTag  
+        Line.Name = "Line"  
+
+        local Corner = Instance.new("UICorner")  
+        Corner.CornerRadius = UDim.new(0, 10)  
+        Corner.Parent = Line  
+          
+        -- HealthBar creation starts here
+
+-- Create instances for each UI element
+local HealthBar = Instance.new("Frame")
+local UICorner_HealthBar = Instance.new("UICorner")
+local Bar = Instance.new("Frame")
+local UICorner_Bar = Instance.new("UICorner")
+local UIStroke_Bar = Instance.new("UIStroke")
+local Bar2 = Instance.new("Frame")
+local UICorner_Bar2 = Instance.new("UICorner")
+local TextLabel = Instance.new("TextLabel")
+local UIStroke_TextLabel = Instance.new("UIStroke")
+local Notches = Instance.new("Frame")
+local Notch1 = Instance.new("Frame")
+local Notch2 = Instance.new("Frame")
+local Notch3 = Instance.new("Frame")
+local Notch4 = Instance.new("Frame")
+local Bar3 = Instance.new("Frame")
+local UICorner_Bar3 = Instance.new("UICorner")
+
+-- Setup properties for HealthBar
+HealthBar.Position = UDim2.new(0.5, 0, 0.5, 0)
+HealthBar.Size = UDim2.new(1.70000005, 0, 0.100000128, 0)
+HealthBar.AnchorPoint = Vector2.new(0.5, 0.5)
+HealthBar.Position = UDim2.new(0.5, 0, 0.66, 0)
+HealthBar.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+HealthBar.BackgroundTransparency = 0.9
+HealthBar.BorderColor3 = Color3.fromRGB(27, 42, 53)
+HealthBar.Visible = true
+HealthBar.Name = "HealthBar"
+HealthBar.Parent = NameTag
+
+-- Setup UICorner for HealthBar
+UICorner_HealthBar.CornerRadius = UDim.new(0, 30)
+UICorner_HealthBar.Name = "UICorner_HealthBar"
+UICorner_HealthBar.Parent = HealthBar
+
+-- Setup properties for Bar
+Bar.Position = UDim2.new(0.00999999978, 0, 0.5, 0)
+Bar.Size = UDim2.new(0.980000019, 0, 0.699999988, 0)
+Bar.AnchorPoint = Vector2.new(0, 0.5)
+Bar.BackgroundColor3 = Color3.fromRGB(99, 233, 151)
+Bar.BorderColor3 = Color3.fromRGB(27, 42, 53)
+Bar.ZIndex = 4
+Bar.Name = "Bar"
+Bar.Parent = HealthBar
+Bar.Visible = true
+
+-- Setup UICorner for Bar
+UICorner_Bar.CornerRadius = UDim.new(0, 30)
+UICorner_Bar.Name = "UICorner_Bar"
+UICorner_Bar.Parent = Bar
+
+-- Setup UIStroke for Bar
+UIStroke_Bar.Color = Color3.fromRGB(255, 255, 255)
+UIStroke_Bar.Thickness = 2
+UIStroke_Bar.Transparency = 0.85
+UIStroke_Bar.Name = "UIStroke_Bar"
+UIStroke_Bar.Parent = HealthBar
+
+-- Setup properties for Bar2
+Bar2.Position = UDim2.new(0.00999999978, 0, 0.5, 0)
+Bar2.Size = UDim2.new(0.980000019, 0, 0.699999988, 0)
+Bar2.AnchorPoint = Vector2.new(0, 0.5)
+Bar2.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+Bar2.BorderColor3 = Color3.fromRGB(27, 42, 53)
+Bar2.ZIndex = 2
+Bar2.Name = "Bar2"
+Bar2.Parent = HealthBar
+Bar2.Visible = true
+
+-- Setup UICorner for Bar2
+UICorner_Bar2.CornerRadius = UDim.new(0, 30)
+UICorner_Bar2.Name = "UICorner_Bar2"
+UICorner_Bar2.Parent = Bar2
+
+-- Setup properties for TextLabel
+TextLabel.Position = UDim2.new(0.5, 0, 0.5, 0)
+TextLabel.Size = UDim2.new(0.5, 0, 2, 0)
+TextLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1
+TextLabel.BorderColor3 = Color3.fromRGB(27, 42, 53)
+TextLabel.BorderSizePixel = 0
+TextLabel.Visible = true
+TextLabel.ZIndex = 9
+TextLabel.FontFace = Font.new("rbxasset://Fonts/.GoogleSans-Bold.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.TextScaled = true
+TextLabel.TextSize = 14
+TextLabel.TextWrapped = true
+TextLabel.Name = "TextLabel"
+TextLabel.Parent = HealthBar
+
+-- Setup UIStroke for TextLabel
+UIStroke_TextLabel.LineJoinMode = Enum.LineJoinMode.Bevel
+UIStroke_TextLabel.Thickness = 2
+UIStroke_TextLabel.Transparency = 0.35 
+UIStroke_TextLabel.Name = "UIStroke_TextLabel"
+UIStroke_TextLabel.Parent = TextLabel
+
+-- Setup properties for Notches
+Notches.Position = UDim2.new(0.5, 0, 0.5, 0)
+Notches.Size = UDim2.new(1, 0, 1, 0)
+Notches.AnchorPoint = Vector2.new(0.5, 0.5)
+Notches.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Notches.BackgroundTransparency = 1
+Notches.BorderColor3 = Color3.fromRGB(27, 42, 53)
+Notches.BorderSizePixel = 0
+Notches.Name = "Notches"
+Notches.Parent = HealthBar
+Notches.Visible = true
+
+-- Setup properties for Notch1
+Notch1.Position = UDim2.new(0.25, 0, 0.5, 0)
+Notch1.Size = UDim2.new(0, 2, 1, -4)
+Notch1.AnchorPoint = Vector2.new(0.5, 0.5)
+Notch1.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Notch1.BackgroundTransparency = 0.8
+Notch1.BorderColor3 = Color3.fromRGB(27, 42, 53)
+Notch1.BorderSizePixel = 0
+Notch1.ZIndex = 7
+Notch1.Name = "Notch1"
+Notch1.Parent = Notches
+Notch1.Visible = true
+
+-- Setup properties for Notch2
+Notch2.Position = UDim2.new(0.5, 0, 0.5, 0)
+Notch2.Size = UDim2.new(0, 2, 1, -4)
+Notch2.AnchorPoint = Vector2.new(0.5, 0.5)
+Notch2.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Notch2.BackgroundTransparency = 0.8
+Notch2.BorderColor3 = Color3.fromRGB(27, 42, 53)
+Notch2.BorderSizePixel = 0
+Notch2.ZIndex = 7
+Notch2.Name = "Notch2"
+Notch2.Parent = Notches
+Notch2.Visible = true
+
+-- Setup properties for Notch3
+Notch3.Position = UDim2.new(0.75, 0, 0.5, 0)
+Notch3.Size = UDim2.new(0, 2, 1, -4)
+Notch3.AnchorPoint = Vector2.new(0.5, 0.5)
+Notch3.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+Notch3.BackgroundTransparency = 0.8
+Notch3.BorderColor3 = Color3.fromRGB(27, 42, 53)
+Notch3.BorderSizePixel = 0
+Notch3.ZIndex = 7
+Notch3.Name = "Notch3"
+Notch3.Parent = Notches
+Notch3.Visible = true
+
+-- Setup properties for Notch4 (Initially hidden)
+
+-- Setup properties for Bar3
+
+-- Setup UICorner for Bar3
+UICorner_Bar3.CornerRadius = UDim.new(0, 30)
+UICorner_Bar3.Name = "UICorner_Bar3"
+UICorner_Bar3.Parent = Bar3
+
+local function updateHealthBar(player)
+    if not player or not player.Character then return end
+
+    local character = player.Character
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+
+    while not humanoid do
+        task.wait()
+        if not character.Parent then return end
+        humanoid = character:FindFirstChildOfClass("Humanoid")
+    end  
+
+    local TweenService = game:GetService("TweenService")
+
+    local function onHealthChanged()
+        if not humanoid or not humanoid.Parent or humanoid.MaxHealth == 0 then return end
+
+        local healthPercentage = math.clamp(humanoid.Health / humanoid.MaxHealth, 0, 1)
+local goalSize = UDim2.new(math.clamp(healthPercentage - 0.02, 0.1, 1), 0, 0.7, 0)
+
+        local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+        local tween = TweenService:Create(Bar, tweenInfo, {Size = goalSize})
+
+        tween:Play()
+        TextLabel.Text = math.floor(healthPercentage * 100) .. "%"
+
+        local healthColor = Color3.fromRGB(99, 233, 151)
+        if healthPercentage <= 0.34 then
+            healthColor = Color3.fromRGB(255, 102, 111)
+        elseif healthPercentage <= 0.65 then
+            healthColor = Color3.fromRGB(250, 206, 58)
+        end
+
+        Bar.BackgroundColor3 = healthColor
+    end
+
+    onHealthChanged()
+    humanoid.HealthChanged:Connect(onHealthChanged)
+end
+
+
+updateHealthBar(player)
+
+-- Hide NameTag in first-person mode  
+        if head then  
+            head:GetPropertyChangedSignal("LocalTransparencyModifier"):Connect(function()  
+                NameTag.Enabled = head.LocalTransparencyModifier ~= 1  
+            end)  
+        end  
+    end)  
+end  
+
+player.CharacterAdded:Connect(onCharacterAdded)  
+if player.Character then  
+    onCharacterAdded(player.Character)  
+end
+
+end
+
+-- Apply NameTags to all players
+for _, player in ipairs(Players:GetPlayers()) do
+NameTags(player)
+end
+
+Players.PlayerAdded:Connect(NameTags)

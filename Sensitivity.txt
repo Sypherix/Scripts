@@ -1,0 +1,8 @@
+local SENSITIVITY = 1.3
+
+local CameraInput = require(game:GetService("Players").LocalPlayer.PlayerScripts.PlayerModule.CameraModule.CameraInput)
+local OriginalFunction = CameraInput.getRotation
+
+function CameraInput.getRotation(...)
+    return OriginalFunction(...)*SENSITIVITY
+end

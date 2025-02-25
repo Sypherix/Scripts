@@ -1,0 +1,73 @@
+task.spawn(function()
+local flagtables = {
+    ["DFFlagDisableDPIScale"] = "False",
+    ["FFlagTaskSchedulerLimitTargetFpsTo2402"] = "False",
+    ["DFIntTimestepArbiterThresholdCFLThou"] = "300",
+    ["FFlagDebugRefactorInExpGameSettings"] = "True",
+    ["FIntGrassMovementReducedMotionFactor"] = "0",
+    ["FFlagDebugDisplayFPS"] = "True",
+    ["DFFlagDebugDisableTimeoutDisconnect"] = "True",
+    ["FFlagReplaceChromeNotificationBadge2"] = "False",
+    ["FFlagFastGPULightCulling3"] = "True",
+    ["FFlagFixParticleAttachmentCulling"] = "True",
+    ["FFlagSimEnableDCD10"] = "True",
+    ["FFlagRenderNoLowFrmBloom"] = "True",
+    ["FFlagGameBasicSettingsFramerateCap5"] = "True",
+    ["FIntDebugForceMSAASamples"] = "4",
+    ["FFlagAccessoryAdjustmentEnabled2"] = "True",
+    ["FFlagHumanoidDescriptionUseInstances5"] = "True",
+    ["FFlagEnableNonUAPAccessoryAdjustment"] = "True",
+    ["FFlagAXAvatarFetchResultCamelCase"] = "True",
+    ["FFlagAXAccessoryAdjustment"] = "True",
+    ["FFlagAXAccessoryAdjustmentIXPEnabled"] = "True",
+    ["FFlagAXAccessoryAdjustmentIXPEnabledForAll"] = "True",
+    ["FFlagDebugDisableHyperionDetections"] = "True",
+    ["FFlagDebugDisableSploregPackets3"] = "True",
+    ["FFlagDebugDisableTelemetryEphemeralCounter"] = "True",
+    ["FFlagDebugDisableTelemetryEphemeralStat"] = "True",
+    ["FFlagDebugDisableTelemetryEventIngest"] = "True",
+    ["FFlagDebugDisableTelemetryPoint"] = "True",
+    ["FFlagDebugDisableTelemetryV2Counter"] = "True",
+    ["FFlagDebugDisableTelemetryV2Event"] = "True",
+    ["FFlagDebugDisableTelemetryV2Stat"] = "True",
+    ["FIntFontSizePadding"] = "3",
+    ["FFlagScreenGuiRaycastsFixLag"] = "True",
+    ["FIntTargetRefreshRate"] = "9999",
+    ["DFIntNetworkPrediction"] = "120",
+    ["FFlagRenderFixFog"] = "True",
+    ["DFFlagEnableTexturePreloading"] = "True",
+    ["DFFlagSimReportCPUInfo"] = "False",
+    ["FFlagReduceDirtyFlagSettings"] = "True",
+    ["FFlagOptimizeServerTickRate"] = "True",
+    ["DFFlagTaskSchedulerAvoidSleep"] = "True",
+    ["FIntUITextureMaxRenderTextureSize"] = "1024"
+}
+
+local function m(z)
+    z = z:gsub("^DFInt", "")
+    z = z:gsub("^DFFlag", "")
+    z = z:gsub("FString","")
+    z = z:gsub("FLog","")
+    z = z:gsub("^FFlag", "")
+    z = z:gsub("^DFint", "")
+    z = z:gsub("^FInt", "")
+    return z
+end
+
+if setfflag then
+  task.spawn(function()
+   local start = os.clock()
+    for k, v in pairs(flagtables) do
+    if getfflag(m(k)) then
+     setfflag(m(k), v)
+    elseif getfflag(k)  then 
+     setfflag(k,v)
+     end
+    end
+    print("Done in " .. os.clock()-start)
+  end)
+    
+else
+    print("not supported")
+end
+end)

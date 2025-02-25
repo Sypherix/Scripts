@@ -1,0 +1,52 @@
+local player = game:GetService("Players").LocalPlayer
+
+local function setupHumanoidProperties(humanoid)
+    if humanoid then
+        -- Set initial humanoid properties
+        humanoid.AutoJumpEnabled = false
+        humanoid.NameDisplayDistance = 0
+        humanoid.HealthDisplayDistance = 0
+
+        -- Enforce AutoJumpEnabled
+        humanoid:GetPropertyChangedSignal("AutoJumpEnabled"):Connect(function()
+            if humanoid.AutoJumpEnabled then
+                humanoid.AutoJumpEnabled = false
+            end
+        end)
+
+        -- Enforce NameDisplayDistance
+        humanoid:GetPropertyChangedSignal("NameDisplayDistance"):Connect(function()
+            if humanoid.NameDisplayDistance ~= 0 then
+                humanoid.NameDisplayDistance = 0
+            end
+        end)
+
+        -- Enforce HealthDisplayDistance
+        humanoid:GetPropertyChangedSignal("HealthDisplayDistance"):Connect(function()
+            if humanoid.HealthDisplayDistance ~= 0 then
+                humanoid.HealthDisplayDistance = 0
+            end
+        end)
+    end
+end
+
+local function onCharacterAdded(character)
+    local humanoid = character:FindFirstChildOfClass("Humanoid")
+    if humanoid then
+        setupHumanoidProperties(humanoid)
+    else
+        character.ChildAdded:Connect(function(child)
+            if child:IsA("Humanoid") then
+                setupHumanoidProperties(child)
+            end
+        end)
+    end
+end
+
+
+player.CharacterAdded:Connect(onCharacterAdded)
+
+-- Apply properties to the current character if it exists
+if player.Character then
+    onCharacterAdded(player.Character)
+end

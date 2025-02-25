@@ -1,0 +1,74 @@
+local HttpService = game:GetService("HttpService")
+
+local function apply(fpath, enablecfonts)
+    local cfont = nil
+    local connection = nil
+
+    local function func()
+        for _, v in game:GetDescendants() do
+            if v:IsA("TextLabel") or v:IsA("TextButton") or v:IsA("TextBox") then
+                if cfont and v.FontFace ~= cfont then
+                    v.FontFace = cfont
+                    v:GetPropertyChangedSignal("FontFace"):Connect(function()
+                        if v.FontFace ~= cfont then
+                            v.FontFace = cfont
+                        end
+                    end)
+                end
+            end
+        end
+    end
+
+    if enablecfonts then
+        if fpath then
+            if fpath:match("^rbxassetid://%d+$") or fpath:match("^rbxasset://") then
+                cfont = Font.new(fpath, Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+            elseif fpath:match('%.ttf$') or fpath:match('%.otf$') then
+                if not isfolder("Fonts") then
+                    makefolder("Fonts")
+                end
+
+                local json = "Fonts/." .. fpath:match("([^/]+)%.%w+$") .. ".json"
+                writefile(json, HttpService:JSONEncode({
+                    name = 'font',
+                    faces = {
+                        {
+                            name = 'Regular',
+                            weight = 600,
+                            style = 'normal',
+                            assetId = getcustomasset(fpath)
+                        }
+                    }
+                }))
+                
+                cfont = Font.new(getcustomasset(json), Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+            end
+        end
+    else
+        if Enum.Font[fpath] then
+            cfont = Font.fromEnum(Enum.Font[fpath])
+        end
+    end
+
+    func()
+
+    if connection then
+        connection:Disconnect()
+    end
+
+    connection = game.DescendantAdded:Connect(function(v)
+        if v:IsA("TextLabel") or v:IsA("TextButton") or v:IsA("TextBox") then
+            if cfont and v.FontFace ~= cfont then
+                v.FontFace = cfont
+                v:GetPropertyChangedSignal("FontFace"):Connect(function()
+                    if v.FontFace ~= cfont then
+                        v.FontFace = cfont
+                    end
+                end)
+            end
+        end
+    end)
+end
+
+-- Example usage:
+apply('Arcade', false) -- Uses a local font file

@@ -1,0 +1,88 @@
+local player = game.Players.LocalPlayer
+local camera = workspace.CurrentCamera
+local tweenService = game:GetService("TweenService")
+
+local function applyHighlight(character)
+    if not character or not character.PrimaryPart then return end
+    if character:FindFirstChild("ClientHighlight") then return end -- Prevent duplicates
+
+    local highlight = Instance.new("Highlight")
+    highlight.Name = "ClientHighlight"
+    highlight.Parent = character
+    highlight.FillColor = Color3.fromRGB(255, 255, 255)
+    highlight.OutlineColor = Color3.fromRGB(255, 255, 255)
+    highlight.FillTransparency = 1
+    highlight.OutlineTransparency = 1
+    highlight.Enabled = false
+
+    local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut)
+    local currentTween
+
+    local function tweenHighlight(obscured)
+        if currentTween then
+            currentTween:Cancel()
+        end
+
+        highlight.Enabled = true -- Ensure it's visible before tweening
+
+        local goal = {
+            FillTransparency = obscured and 0.87 or 1,
+            OutlineTransparency = obscured and 0.5 or 1
+        }
+
+        currentTween = tweenService:Create(highlight, tweenInfo, goal)
+        currentTween:Play()
+
+        -- Ensure we properly disable highlight after tween completion
+        task.spawn(function()
+            currentTween.Completed:Wait()
+            if not obscured then -- Short delay to prevent flickering
+                highlight.Enabled = false
+            end
+        end)
+    end
+
+    local function checkObscured()
+        if not character or not character.PrimaryPart then return false end
+        local ignoreList = character:GetDescendants() -- Ignore character parts
+        local parts = camera:GetPartsObscuringTarget({character.PrimaryPart.Position}, ignoreList)
+        
+        for _, part in ipairs(parts) do
+            if part:IsA("BasePart") and part.Transparency < 0.9 then
+                return true
+            end
+        end
+        return false
+    end
+
+    local running = true
+    character.AncestryChanged:Connect(function(_, parent)
+        if not parent then running = false end
+    end)
+
+    task.spawn(function()
+        local lastObscuredStatus = nil
+        while running do
+            local isObscured = checkObscured()
+            if isObscured ~= lastObscuredStatus then
+                tweenHighlight(isObscured)
+                lastObscuredStatus = isObscured
+            end
+            task.wait(0.05)
+        end
+        highlight:Destroy()
+    end)
+end
+
+local function onCharacterAdded(character)
+    if character then
+        character:WaitForChild("HumanoidRootPart", 10) -- Wait for main part
+        applyHighlight(character)
+    end
+end
+
+if player.Character then
+    onCharacterAdded(player.Character)
+end
+
+player.CharacterAdded:Connect(onCharacterAdded)

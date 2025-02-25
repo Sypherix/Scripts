@@ -1,0 +1,220 @@
+local function modifyinventory()
+    local bigmac = game:FindFirstChild("CoreGui")
+    if not bigmac then return end
+
+    local inv = bigmac:FindFirstChild("RobloxGui")
+    if not inv then return end
+
+    inv = inv:FindFirstChild("Backpack")
+    if not inv then return end
+
+    local hotbar = inv:FindFirstChild("Hotbar")
+    if not hotbar then return end
+
+    local function modifytextbutton(btn)
+        if btn:IsA("TextButton") then
+            if not btn:FindFirstChild("UICorner") then
+                local corner = Instance.new("UICorner")
+                corner.CornerRadius = UDim.new(0, 8)
+                corner.Parent = btn
+            end
+            btn.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+            btn.BackgroundTransparency = 0.3
+
+            local icon = btn:FindFirstChild("Icon")
+            if icon and not icon:FindFirstChild("UICorner") then
+                local iconCorner = Instance.new("UICorner")
+                iconCorner.CornerRadius = UDim.new(0, 3)
+                iconCorner.Parent = icon
+                icon.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+                icon.Size = UDim2.new(1, -10, 1, -10)
+                icon.Position = UDim2.new(0.5, 0, 0.5, 0)
+                icon.AnchorPoint = Vector2.new(0.5, 0.5)
+            end
+
+            local toolName = btn:FindFirstChild("ToolName")
+            if toolName and toolName:IsA("TextLabel") then
+                toolName.TextSize = 16
+            end
+
+            local tooltip = btn:FindFirstChild("ToolTip")
+            if tooltip then
+                tooltip.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+                tooltip.BackgroundTransparency = 0
+                tooltip.TextSize = 16
+                if not tooltip:FindFirstChild("UICorner") then
+                    local tooltipCorner = Instance.new("UICorner")
+                    tooltipCorner.CornerRadius = UDim.new(0, 3)
+                    tooltipCorner.Parent = tooltip
+                end
+            end
+
+            local stroke = btn:FindFirstChildOfClass("UIStroke")
+            if not stroke then
+                stroke = Instance.new("UIStroke")
+                stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+                stroke.Color = Color3.fromRGB(255, 255, 255)
+                stroke.LineJoinMode = Enum.LineJoinMode.Round
+                stroke.Thickness = 5
+                stroke.Transparency = 0
+                stroke.Parent = btn
+            end
+            stroke.Enabled = false
+
+            local function updatestroke()
+                local equipped = btn:FindFirstChild("Equipped")
+                stroke.Enabled = equipped ~= nil
+                if equipped then
+                    equipped.Visible = false
+                    equipped:GetPropertyChangedSignal("Visible"):Connect(function()
+                        equipped.Visible = false
+                    end)
+                end
+            end
+
+            updatestroke()
+            btn.ChildAdded:Connect(function(child)
+                if child.Name == "Equipped" then
+                    updatestroke()
+                end
+            end)
+            btn.ChildRemoved:Connect(function(child)
+                if child.Name == "Equipped" then
+                    updatestroke()
+                end
+            end)
+
+            if not btn:GetAttribute("UIEnforcerConnected") then
+                btn:GetPropertyChangedSignal("BackgroundColor3"):Connect(function()
+                    if btn.BackgroundColor3 ~= Color3.fromRGB(25, 27, 29) then
+                        btn.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+                    end
+                end)
+                btn:GetPropertyChangedSignal("BackgroundTransparency"):Connect(function()
+                    if btn.BackgroundTransparency ~= 0.3 then
+                        btn.BackgroundTransparency = 0.3
+                    end
+                end)
+                btn:SetAttribute("UIEnforcerConnected", true)
+            end
+        end
+    end
+
+    local function processGui(obj)
+        if obj:IsA("TextButton") then
+            modifytextbutton(obj)
+        end
+        obj.ChildAdded:Connect(function(child)
+            processGui(child)
+            if child:IsA("TextButton") then
+                modifytextbutton(child)
+                if obj == hotbar then
+                    child.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+                    child.BackgroundTransparency = 0.3
+                end
+            end
+        end)
+        obj.ChildRemoved:Connect(function(child)
+        end)
+    end
+
+    for _, child in ipairs(hotbar:GetChildren()) do
+        processGui(child)
+    end
+    hotbar.ChildAdded:Connect(function(child)
+        processGui(child)
+    end)
+    hotbar.ChildRemoved:Connect(function(child)
+    end)
+
+    local inventory = inv:FindFirstChild("Inventory")
+    if not inventory then return end
+    inventory.Position = UDim2.new(0.5, -197, 1, -250)
+    inventory.Size = UDim2.new(0, 395, 0, 180)
+    if not inventory:FindFirstChild("UICorner") then
+        local invCorner = Instance.new("UICorner")
+        invCorner.CornerRadius = UDim.new(0, 8)
+        invCorner.Parent = inventory
+    end
+    inventory.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+    inventory.BackgroundTransparency = 0.3
+
+    local search = inventory:FindFirstChild("Search")
+    if not search then return end
+    search.Size = UDim2.new(0, 190, 0, 30)
+    search.Position = UDim2.new(1, -195, 0, 5)
+    search.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+    search.BackgroundTransparency = 0.2
+    if not search:FindFirstChildOfClass("UIStroke") then
+        local searchStroke = Instance.new("UIStroke")
+        searchStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+        searchStroke.Color = Color3.fromRGB(255, 255, 255)
+        searchStroke.LineJoinMode = Enum.LineJoinMode.Round
+        searchStroke.Thickness = 1
+        searchStroke.Transparency = 0.8
+        searchStroke.Parent = search
+    end
+    if not search:FindFirstChild("UICorner") then
+        local searchCorner = Instance.new("UICorner")
+        searchCorner.CornerRadius = UDim.new(0, 3)
+        searchCorner.Parent = search
+    end
+
+    local xButton = search:FindFirstChild("X")
+    if xButton then
+        xButton.Size = UDim2.new(0, 30, 0, 30)
+        xButton.Position = UDim2.new(1, -30, 0.5, -15)
+        xButton.TextTransparency = 1
+        xButton.BackgroundTransparency = 1
+        local xImage = Instance.new("ImageLabel")
+        xImage.Image = "rbxasset://textures/ui/InspectMenu/x.png"
+        xImage.AnchorPoint = Vector2.new(0.5, 0.5)
+        xImage.BackgroundTransparency = 1
+        xImage.Position = UDim2.new(0.5, 0, 0.5, 0)
+        xImage.Size = UDim2.new(0, 10, 0, 10)
+        xImage.Parent = xButton
+    end
+
+    local textBox = search:FindFirstChild("TextBox")
+    if textBox then
+        textBox.AnchorPoint = Vector2.new(0, 0.5)
+        textBox.Position = UDim2.new(0, 8, 0.5, 0)
+        textBox.Size = UDim2.new(0, 154, 0, 14)
+        textBox.TextSize = 16
+        textBox.TextTransparency = 0.5
+        textBox.TextColor3 = Color3.fromRGB(178, 178, 178)
+        textBox.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
+        textBox.BackgroundTransparency = 1
+        textBox.PlaceholderText = "Search..."
+    end
+
+    local scrollingFrame = inventory:FindFirstChild("ScrollingFrame")
+    if scrollingFrame then
+        scrollingFrame.Size = UDim2.new(1, 9, 1, -40)
+        scrollingFrame.Position = UDim2.new(0, 0, 0, 40)
+        local gridFrame = scrollingFrame:FindFirstChild("UIGridFrame")
+        if gridFrame then
+            gridFrame.Position = UDim2.new(0, 5, 0, 0)
+            gridFrame.Size = UDim2.new(1, -10, 1, 0)
+            for _, child in ipairs(gridFrame:GetChildren()) do
+                processGui(child)
+            end
+            gridFrame.ChildAdded:Connect(function(child)
+                processGui(child)
+                if child:IsA("TextButton") then
+                    child.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+                    child.BackgroundTransparency = 0.3
+                end
+            end)
+            gridFrame.ChildRemoved:Connect(function(child)
+            end)
+        end
+    end
+end
+
+modifyinventory()
+
+local player = game.Players.LocalPlayer
+player.CharacterAdded:Connect(function()
+    modifyinventory()
+end)

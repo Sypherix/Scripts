@@ -1,0 +1,124 @@
+local Players = game:GetService("Players")
+
+local function createEffect(character)
+    local hrp = character:WaitForChild("HumanoidRootPart", 5)
+    if not hrp then return end
+
+    -- Create Part
+    local part = Instance.new("Part")
+    part.Size = Vector3.new(0.391, 0.174, 0.348)
+    part.Transparency = 1
+    part.Anchored = false
+    part.CanCollide = false
+    part.CanTouch = false
+    part.CanQuery = false
+    part.Position = hrp.Position
+    part.Parent = character
+
+    -- Weld the part to HRP
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = part
+    weld.Part1 = hrp
+    weld.Parent = part
+
+    -- Create Sound
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://1533443385"
+    sound.RollOffMinDistance = 10
+    sound.RollOffMaxDistance = 100
+    sound.RollOffMode = Enum.RollOffMode.Linear
+    sound.Parent = part
+
+    -- Ensure sound plays when loade
+        sound:Play()
+
+    -- Create First Particle Emitter
+    local pe1 = Instance.new("ParticleEmitter")
+    pe1.LightEmission = 1
+    pe1.Size = NumberSequence.new{
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(0.093, 0.522),
+        NumberSequenceKeypoint.new(0.171, 0),
+        NumberSequenceKeypoint.new(0.291, 0.836),
+        NumberSequenceKeypoint.new(0.483, 0.139),
+        NumberSequenceKeypoint.new(1, 1)
+    }
+    pe1.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+    pe1.Transparency = NumberSequence.new{
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(0.418, 0.633),
+        NumberSequenceKeypoint.new(1, 1)
+    }
+    pe1.Acceleration = Vector3.new(0, -10, 0)
+    pe1.Drag = 4
+    pe1.Rate = 100
+    pe1.LockedToPart = false
+    pe1.TimeScale = 1
+    pe1.EmissionDirection = Enum.NormalId.Top
+    pe1.Lifetime = NumberRange.new(1, 1)
+    pe1.RotSpeed = NumberRange.new(-350, -350)
+    pe1.Speed = NumberRange.new(25, 25)
+    pe1.SpreadAngle = Vector2.new(60, 0)
+    pe1.Shape = Enum.ParticleEmitterShape.Box
+    pe1.ShapeInOut = Enum.ParticleEmitterShapeInOut.Outward
+    pe1.ShapePartial = 1
+    pe1.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+    pe1.Parent = part
+    pe1.Enabled = true
+
+    -- Create Second Particle Emitter
+    local pe2 = Instance.new("ParticleEmitter")
+    pe2.LightEmission = 1
+    pe2.Size = NumberSequence.new{
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(0.189, 2),
+        NumberSequenceKeypoint.new(1, 0)
+    }
+    pe2.Texture = "rbxassetid://16888601059"
+    pe2.Transparency = NumberSequence.new{
+        NumberSequenceKeypoint.new(0, 0.187),
+        NumberSequenceKeypoint.new(0.418, 0.633),
+        NumberSequenceKeypoint.new(1, 1)
+    }
+    pe2.Acceleration = Vector3.new(0, 0, 0)
+    pe2.Drag = 4
+    pe2.Rate = 10
+    pe2.LockedToPart = true
+    pe2.TimeScale = 1
+    pe2.EmissionDirection = Enum.NormalId.Top
+    pe2.Lifetime = NumberRange.new(0.25, 0.3)
+    pe2.RotSpeed = NumberRange.new(-350, -350)
+    pe2.Speed = NumberRange.new(0, 0)
+    pe2.SpreadAngle = Vector2.new(0, 0)
+    pe2.Shape = Enum.ParticleEmitterShape.Box
+    pe2.ShapeInOut = Enum.ParticleEmitterShapeInOut.Outward
+    pe2.ShapePartial = 1
+    pe2.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+    pe2.Parent = part
+    pe2.Enabled = true
+
+    -- Disable effects after 0.2 seconds
+    task.delay(0.3, function()
+        pe1.Enabled = false
+        pe2.Enabled = false
+    end)
+
+    -- Destroy part after 5 seconds
+    task.delay(3, function()
+        part:Destroy()
+    end)
+end
+
+-- Apply effect to all existing and new players
+local function onPlayerAdded(player)
+    if player.Character then
+        createEffect(player.Character)
+    end
+    player.CharacterAdded:Connect(createEffect)
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+    onPlayerAdded(player)
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)

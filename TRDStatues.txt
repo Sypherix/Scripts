@@ -1,0 +1,20 @@
+local folder = workspace:FindFirstChild("Idols")
+
+if folder then
+    folder.ChildAdded:Connect(function(child)
+        if child:IsA("Model") or child:IsA("BasePart") then
+            local highlight = child:FindFirstChildOfClass("Highlight")
+            
+            if not highlight then
+                highlight = Instance.new("Highlight")
+                highlight.Parent = child
+            end
+
+            highlight.FillTransparency = 0.87
+            highlight.OutlineTransparency = 0.5
+            highlight.FillColor = Color3.fromRGB(255, 255, 255)  -- White
+            highlight.OutlineColor = Color3.fromRGB(255, 255, 255)  -- White
+            highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        end
+    end)
+end

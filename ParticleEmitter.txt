@@ -1,0 +1,62 @@
+local RunService = game:GetService("RunService")
+
+local function handleParticleEmitters()
+local function emitFromEmitter(emitter)
+if emitter:GetAttribute("199Handled") then return end  -- Prevent duplicate handling
+emitter:SetAttribute("199Handled", true)
+
+local originalRate = emitter.Rate  
+    emitter.Rate = 0  -- Disable automatic emission  
+
+    local function emitLoop()  
+        if emitter:GetAttribute("199Emitting") then return end -- Prevent multiple loops  
+        emitter:SetAttribute("199Emitting", true)  
+
+        while emitter.Parent and emitter.Enabled do  
+            emitter:Emit(1)  
+            task.wait(1 / math.max(originalRate, 0.1)) -- Prevent division by zero  
+        end  
+
+        emitter:SetAttribute("199Emitting", nil) -- Mark loop as stopped  
+    end  
+
+    -- Check if the emitter is enabled when it's added or when enabled state changes  
+    emitter:GetPropertyChangedSignal("Enabled"):Connect(function()  
+        if emitter.Enabled and not emitter:GetAttribute("199Emitting") then  
+            task.spawn(emitLoop)  
+        end  
+    end)  
+
+    -- Start emitting immediately if it's enabled  
+    if emitter.Enabled then  
+        task.spawn(emitLoop)  
+    end  
+end  
+
+local function checkAndEmitAllEmitters()  
+    for _, object in ipairs(game:GetDescendants()) do  
+        if object:IsA("ParticleEmitter") then  
+            emitFromEmitter(object)  
+        end  
+    end  
+end  
+
+checkAndEmitAllEmitters()  
+
+-- Connect newly added particle emitters  
+game.DescendantAdded:Connect(function(object)  
+    if object:IsA("ParticleEmitter") then  
+        emitFromEmitter(object)  
+    end  
+end)
+
+end
+
+handleParticleEmitters()
+
+local model = Instance.new("Model")
+model.Name = "€€€Checker"
+model.Parent = workspace
+
+-- uld you optimize this?
+

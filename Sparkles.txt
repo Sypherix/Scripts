@@ -1,0 +1,68 @@
+local player = game.Players.LocalPlayer
+
+local function createAndWeldPart(character)
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart", 5)
+    if not humanoidRootPart then return end -- Ensure it's loaded
+
+    local _, characterSize = character:GetBoundingBox()
+
+    -- Remove old part if it exists
+    local oldPart = character:FindFirstChild("EffectPart")
+    if oldPart then
+        oldPart:Destroy()
+    end
+
+    local newPart = Instance.new("Part")
+    newPart.Name = "EffectPart"
+    newPart.Size = characterSize
+    newPart.Transparency = 1
+    newPart.CanCollide = false
+    newPart.Massless = true
+    newPart.Parent = character
+    newPart.CFrame = humanoidRootPart.CFrame
+
+    local weld = Instance.new("WeldConstraint")
+    weld.Part0 = humanoidRootPart
+    weld.Part1 = newPart
+    weld.Parent = newPart
+
+    local pe = Instance.new("ParticleEmitter")
+    pe.Texture = "rbxassetid://78182182291126"
+    pe.TimeScale = 1
+    pe.Lifetime = NumberRange.new(0.24, 0.33)
+    pe.LockedToPart = true
+    pe.Rate = 6
+    pe.RotSpeed = NumberRange.new(-200, -200)
+    pe.Speed = NumberRange.new(0, 0)
+    pe.Shape = Enum.ParticleEmitterShape.Box
+    pe.ShapeInOut = Enum.ParticleEmitterShapeInOut.Outward
+    pe.ShapeStyle = Enum.ParticleEmitterShapeStyle.Volume
+    pe.Brightness = 1
+    pe.LightEmission = 1
+    pe.Size = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(0.5, 0.2),
+        NumberSequenceKeypoint.new(1, 0)
+    })
+    pe.Squash = NumberSequence.new(0) -- Fix Squash values
+    pe.Transparency = NumberSequence.new({
+        NumberSequenceKeypoint.new(0, 0),
+        NumberSequenceKeypoint.new(0.053, 0),
+        NumberSequenceKeypoint.new(1, 1)
+    })
+    pe.ZOffset = 2
+    pe.Parent = newPart
+end
+
+if player.Character then
+    createAndWeldPart(player.Character)
+end
+
+player.CharacterAdded:Connect(function(character)
+    local oldPart = character:FindFirstChild("EffectPart")
+    if oldPart then
+        oldPart:Destroy()
+    end
+    task.wait(1) -- Wait to ensure parts are fully loaded
+    createAndWeldPart(character)
+end) -- **Fixed missing `end`**
