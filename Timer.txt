@@ -1,0 +1,40 @@
+local screenGui = Instance.new("ScreenGui")
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create TextLabel for timer
+timerLabel = Instance.new("TextLabel")
+timerLabel.Size = UDim2.new(0, 200, 0, 50)
+timerLabel.Position = UDim2.new(1, -210, 0.3, 0) -- Positioned at right center, but a bit high
+timerLabel.BackgroundColor3 = Color3.fromRGB(25, 27, 29)
+timerLabel.BackgroundTransparency = 0.3
+timerLabel.TextColor3 = Color3.new(1, 1, 1)
+timerLabel.TextScaled = true
+timerLabel.Parent = screenGui
+
+-- Create UICorner for rounded edges
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0, 8)
+uiCorner.Parent = timerLabel
+
+task.spawn(function()
+    local startTime = tick()
+    while true do
+        local elapsedTime = tick() - startTime
+        local days = math.floor(elapsedTime / 86400)
+        local hours = math.floor((elapsedTime % 86400) / 3600)
+        local minutes = math.floor((elapsedTime % 3600) / 60)
+        local seconds = math.floor(elapsedTime % 60)
+        
+        local timestring = ""
+        if days >= 1 then
+            timestring = string.format("%dd, %dh, %dm, %ds", days, hours, minutes, seconds)
+        elseif hours >= 1 then
+            timestring = string.format("%dh, %dm, %ds", hours, minutes, seconds)
+        else
+            timestring = string.format("%dm, %ds", minutes, seconds)
+        end
+        
+        timerLabel.Text = timestring
+        task.wait(0.01)
+    end
+end)
