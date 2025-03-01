@@ -100,6 +100,15 @@ local function createEffect(character)
     end)
 end
 
-Players.PlayerAdded:Connect(function(player)
+local function onPlayerAdded(player)
+    if player.Character then
+        createEffect(player.Character)
+    end
     player.CharacterAdded:Connect(createEffect)
-end)
+end
+
+for _, player in ipairs(Players:GetPlayers()) do
+    onPlayerAdded(player)
+end
+
+Players.PlayerAdded:Connect(onPlayerAdded)
