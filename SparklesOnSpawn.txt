@@ -4,7 +4,6 @@ local function createEffect(character)
     local hrp = character:WaitForChild("HumanoidRootPart", 5)
     if not hrp then return end
 
-    -- Create Part
     local part = Instance.new("Part")
     part.Size = Vector3.new(0.391, 0.174, 0.348)
     part.Transparency = 1
@@ -15,24 +14,19 @@ local function createEffect(character)
     part.Position = hrp.Position
     part.Parent = character
 
-    -- Weld the part to HRP
     local weld = Instance.new("WeldConstraint")
     weld.Part0 = part
     weld.Part1 = hrp
     weld.Parent = part
 
-    -- Create Sound
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://1533443385"
     sound.RollOffMinDistance = 10
     sound.RollOffMaxDistance = 100
     sound.RollOffMode = Enum.RollOffMode.Linear
     sound.Parent = part
+    sound:Play()
 
-    -- Ensure sound plays when loade
-        sound:Play()
-
-    -- Create First Particle Emitter
     local pe1 = Instance.new("ParticleEmitter")
     pe1.LightEmission = 1
     pe1.Size = NumberSequence.new{
@@ -66,7 +60,6 @@ local function createEffect(character)
     pe1.Parent = part
     pe1.Enabled = true
 
-    -- Create Second Particle Emitter
     local pe2 = Instance.new("ParticleEmitter")
     pe2.LightEmission = 1
     pe2.Size = NumberSequence.new{
@@ -97,28 +90,16 @@ local function createEffect(character)
     pe2.Parent = part
     pe2.Enabled = true
 
-    -- Disable effects after 0.2 seconds
     task.delay(0.3, function()
         pe1.Enabled = false
         pe2.Enabled = false
     end)
 
-    -- Destroy part after 5 seconds
     task.delay(3, function()
         part:Destroy()
     end)
 end
 
--- Apply effect to all existing and new players
-local function onPlayerAdded(player)
-    if player.Character then
-        createEffect(player.Character)
-    end
+Players.PlayerAdded:Connect(function(player)
     player.CharacterAdded:Connect(createEffect)
-end
-
-for _, player in ipairs(Players:GetPlayers()) do
-    onPlayerAdded(player)
-end
-
-Players.PlayerAdded:Connect(onPlayerAdded)
+end)
