@@ -35,6 +35,7 @@ local function modifyinventory()
             local toolName = btn:FindFirstChild("ToolName")
             if toolName and toolName:IsA("TextLabel") then
                 toolName.TextSize = 16
+                toolName.TextTruncate = Enum.TextTruncate.AtEnd
             end
 
             local tooltip = btn:FindFirstChild("ToolTip")
